@@ -4,8 +4,5 @@
   "main": "main.js",
   "dependencies": {
     "socket.io-client": "~1.1.0"
-  },
-  "devDependencies": {
-    "gulp-download-atom-shell": "0.0.4"
-  }
+  }  
 }

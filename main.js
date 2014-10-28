@@ -14,15 +14,10 @@ app.on('ready', function() {
     mainWindow = null;
   });
 
-  var socket = require('socket.io-client')('http://localhost:3000');
-  var ipc = require('ipc');
+  var socket = require('socket.io-client')('http://localhost:3000');  
 
   socket.on('carst', function (data) {    
     mainWindow.loadUrl(data.url);
-  });
-
-  socket.on('handshake', function (id, fn) {
-    fn('thomas');
   });
 
 });
