@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "main.js",
   "dependencies": {
+    "node-shell": "^0.1.6",
     "socket.io-client": "~1.1.0"
-  }  
+  }
 }
