@@ -11,16 +11,37 @@ require('node-shell')(function(err, api) {
 
 
   var carstenUrl = process.env.CARSTEN_URL || 'http://localhost:3000';
+  var carstenProxy = process.env.http_proxy;
+
+  console.log('CARSTEN_URL: ' + carstenUrl);
+  console.log('http_proxy: ' + carstenProxy);
+
   var currentUrl = undefined;
   var newUrl     = undefined;
 
-  var options = 
-    {
-      hostname: url.parse(carstenUrl).hostname, 
-      port: url.parse(carstenUrl).port,
-      path: '/rest/carst',
-      method: 'GET'
-    };
+  var options = {};
+
+  if(carstenProxy === undefined)
+  {
+    options = 
+      {
+        hostname: url.parse(carstenUrl).hostname, 
+        port: url.parse(carstenUrl).port,
+        path: '/rest/carst',
+        method: 'GET'
+      };
+  }
+  else
+  {
+    options = {
+      hostname: url.parse(carstenProxy).hostname,
+      port: url.parse(carstenProxy).port,
+      path: carstenUrl + '/rest/carst',
+      headers: {
+          Host: url.parse(carstenUrl).hostname
+        }
+      };
+  }
 
   //poll for new urls
   setInterval(function(){
