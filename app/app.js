@@ -1,14 +1,23 @@
-var http_req = require('http');
-var url = require('url');
+var http_req      = require('http');
+var url           = require('url');
+var app           = require('app');
+var BrowserWindow = require('browser-window');
 
-require('node-shell')(function(err, api) {  
-  var mainWindow = new api.BrowserWindow({width: 800, height: 600 });
+require('crash-reporter').start();
+var mainWindow = null;
+
+app.on('window-all-closed', function() {
+  if (process.platform != 'darwin')
+    app.quit();
+});
+
+app.on('ready', function() {
+  var mainWindow = new BrowserWindow({width: 800, height: 600 });
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
-
 
   var carstenUrl = process.env.CARSTEN_URL || 'http://localhost:3000';
   var carstenProxy = process.env.http_proxy;

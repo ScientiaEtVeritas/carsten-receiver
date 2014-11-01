@@ -1,8 +1,13 @@
 {
-  "name": "carsten-receiver",
+  "name": "carsten-receiver-builder",
   "version": "0.0.1",
-  "main": "main.js",
-  "dependencies": {
-    "node-shell": "^0.1.6"
+  "scripts": {
+    "start": "release/Atom.app/Contents/MacOS/Atom app/app.js",
+    "postinstall": "gulp"
+  },
+  "devDependencies": {
+    "gulp": "~3.8.9",
+    "gulp-clean": "~0.3.1",
+    "gulp-download-atom-shell": "0.0.4"
   }
 }
