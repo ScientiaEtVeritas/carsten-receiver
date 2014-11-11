@@ -1,4 +1,5 @@
 var http          = require('http');
+    http.post     = require('http-post');
 var url           = require('url');
 var app           = require('app');
 var path          = require('path');
@@ -8,6 +9,7 @@ var BrowserWindow = require('browser-window');
 var config = {};
 config.carstenUrl = process.env.CARSTEN_URL || 'http://localhost:3000';
 config.carstenProxy = process.env.HTTP_PROXY;
+config.channel = process.env.CHANNEL || '#global';
 
 // which plugins, which path
 config.plugins = [{name:'index'}, {name:'system'}, {name:'url'}];
@@ -51,7 +53,6 @@ app.on('ready', function() {
       {
         hostname: url.parse(config.carstenUrl).hostname,
         port: url.parse(config.carstenUrl).port,
-        path: '/rest/carst',
         method: 'GET',
         timeout: 5000000
       };
@@ -69,61 +70,87 @@ app.on('ready', function() {
     };
   }
 
+  function handleUserInput(input) {
+    var matched = false;
+    config.plugins.forEach(function(plugin) {
+      plugin.app.expressions.forEach(function(expression) {
+        if(!matched) {
+          console.log(expression.expression);
+          var match = input.match(expression.expression);
+          if(match) {
+            expression.fn({
+              window: mainWindow,
+              path: path,
+              url: input,
+              match: match
+            });
+            matched = true;
+          }
+        }
+      });
+    });
+  }
+
+  function register() {
+
+    var data = {
+      channel: config.channel
+    };
+
+     var options = {
+     host: url.parse(config.carstenUrl).hostname,
+     port: url.parse(config.carstenUrl).port,
+     path: '/rest/init'
+     };
+
+    http.post(options, data, function(res) {
+      requestCarst();
+      requestCommand();
+    });
+
+  }
+
+  register();
+
   //poll for new urls
   function requestCarst() {
-
+    options.path = '/rest/carst';
     var req = http.request(options, function(res) {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
         var url = JSON.parse( data ).url;
         if(currentUrl !== url) {
-
-          var matched = false;
-          console.log(__dirname);
-
-          config.plugins.forEach(function(plugin) {
-            plugin.app.expressions.forEach(function(expression) {
-              if(!matched) {
-                console.log(expression.expression);
-                var match = url.match(expression.expression);
-                if(match) {
-                  expression.fn({
-                    window: mainWindow,
-                    path: path,
-                    url: url,
-                    match: match
-                  });
-                  matched = true;
-                }
-              }
-            });
-          });
-
+          handleUserInput(url);
           currentUrl = url;
-
-
-
-          /* var match = url.match(config.plugins[0].app.expressions[1].expression);
-           if(match) {
-             config.plugins[0].app.expressions[1].fn(mainWindow, url, match);
-             currentUrl = url;
-           } else {
-             mainWindow.loadUrl(url);
-             currentUrl = url;
-           }*/
         }
-
         requestCarst();
       });
     });
-
     req.end();
     req.on('error', function (e) {
       console.error(e);
     });
   }
 
-  requestCarst();
+
+
+  //poll for new commands
+  function requestCommand() {
+    options.path = '/rest/command';
+    var req = http.request(options, function(res) {
+      var data = '';
+      res.on('data', function(chunk) { data += chunk; });
+      res.on('end', function(){
+        var command = JSON.parse( data ).command;
+          handleUserInput(command);
+        requestCommand();
+      });
+    });
+    req.end();
+    req.on('error', function (e) {
+      console.error(e);
+    });
+  }
 
 });

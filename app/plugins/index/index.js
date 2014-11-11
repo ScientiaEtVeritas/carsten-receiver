@@ -1,6 +1,6 @@
 this.expressions = [
     {
-        expression : new RegExp("^index$"),
+        expression : new RegExp("^app://index$"),
         fn : function(result) {
             result.window.loadUrl(result.path.normalize('file://' + __dirname + '/index.html'));
         }
