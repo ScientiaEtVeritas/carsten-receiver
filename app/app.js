@@ -13,7 +13,7 @@ config.channel = process.env.CHANNEL || '#global';
 
 // which plugins, which path
 config.plugins = [{name:'index'}, {name:'system'}, {name:'url'}];
-config.pluginPath = './plugins/';
+config.pluginPath = './plugins';
 
 // load plugins
 config.plugins.forEach(function(plugin) {

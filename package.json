@@ -9,5 +9,8 @@
     "gulp": "~3.8.9",
     "gulp-clean": "~0.3.1",
     "gulp-download-atom-shell": "0.0.4"
+  },
+  "dependencies": {
+    "http-post": "^0.1.1"
   }
 }
