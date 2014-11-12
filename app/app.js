@@ -105,7 +105,7 @@ app.on('ready', function() {
     };
 
      var options = {
-     host: url.parse(config.carstenUrl).hostname,
+     hostname: url.parse(config.carstenUrl).hostname,
      port: url.parse(config.carstenUrl).port,
      path: '/rest/init'
      };
