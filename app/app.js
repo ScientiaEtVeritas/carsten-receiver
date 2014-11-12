@@ -13,12 +13,16 @@ config.channel = process.env.CHANNEL || '#global';
 
 // which plugins, which path
 config.plugins = [{name:'index'}, {name:'system'}, {name:'url'}];
-config.pluginPath = './plugins';
+if(process.platform === 'win32') {
+  config.pluginPath = './plugins';
+} else {
+  config.pluginPath = '../../../../app/plugins';
+}
 
 // load plugins
 config.plugins.forEach(function(plugin) {
-  plugin.app = require(config.pluginPath + '/' + plugin.name + '/' + plugin.name);
-  console.log('Plugin loaded: ' + plugin.name );
+    plugin.app = require(config.pluginPath + '/' + plugin.name + '/' + plugin.name);
+    console.log('Plugin loaded: ' + plugin.name );
 });
 
 require('crash-reporter').start();
