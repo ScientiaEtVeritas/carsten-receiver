@@ -104,11 +104,23 @@ app.on('ready', function() {
       channel: config.channel
     };
 
-     var options = {
-     hostname: url.parse(config.carstenUrl).hostname,
-     port: url.parse(config.carstenUrl).port,
-     path: '/rest/init'
-     };
+    var options;
+    if(config.carstenProxy === undefined) {
+      options = {
+        hostname: url.parse(config.carstenUrl).hostname,
+        port: url.parse(config.carstenUrl).port,
+        path: '/rest/init'
+      };
+    } else {
+      options = {
+        hostname: url.parse(config.carstenProxy).hostname,
+        port: url.parse(config.carstenProxy).port,
+        path: config.carstenUrl + '/rest/init',
+        headers: {
+          Host: url.parse(config.carstenUrl).hostname
+        }
+      };
+    }
 
     http.post(options, data, function(res) {
       requestCarst();
