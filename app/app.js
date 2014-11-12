@@ -19,6 +19,9 @@ if(process.platform === 'win32') {
   config.pluginPath = '../../../../app/plugins';
 }
 
+console.log(__dirname);
+console.log(path.join(__dirname, '../../../../app/plugins'));
+
 // load plugins
 config.plugins.forEach(function(plugin) {
     plugin.app = require(config.pluginPath + '/' + plugin.name + '/' + plugin.name);
