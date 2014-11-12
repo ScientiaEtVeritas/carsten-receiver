@@ -4,12 +4,14 @@ var url           = require('url');
 var app           = require('app');
 var path          = require('path');
 var BrowserWindow = require('browser-window');
+var os            = require('os');
 
 // some configs
 var config = {};
 config.carstenUrl = process.env.CARSTEN_URL || 'http://localhost:3000';
 config.carstenProxy = process.env.HTTP_PROXY;
 config.channel = process.env.CHANNEL || '#global';
+config.receiverName = process.env.RECEIVER_NAME || os.hostname();
 
 // which plugins, which path
 config.plugins = [{name:'index'}, {name:'system'}, {name:'url'}];
@@ -19,14 +21,21 @@ if(process.platform === 'win32') {
   config.pluginPath = '../../../../../app/plugins';
 }
 
-console.log(__dirname);
-console.log(path.join(__dirname, '../../../../app/plugins'));
+var consolePlugins = '';
 
 // load plugins
 config.plugins.forEach(function(plugin) {
     plugin.app = require(config.pluginPath + '/' + plugin.name + '/' + plugin.name);
-    console.log('Plugin loaded: ' + plugin.name );
+    consolePlugins += '\nPlugin loaded: ' +  plugin.name;
 });
+
+console.log('\n\n********* CONFIGURATION --- START **********\n' +
+'\nCARSTEN_URL: ' + config.carstenUrl +
+'\nHTTP_PROXY: ' + (config.carstenProxy ? config.carstenProxy : 'no proxy') +
+'\nCHANNEL: ' + config.channel +
+'\nRECEIVER_NAME: ' + config.receiverName +
+'\n' + consolePlugins +
+'\n\n********** CONFIGURATION --- END ***********\n\n');
 
 require('crash-reporter').start();
 var mainWindow = null;
@@ -48,33 +57,31 @@ app.on('ready', function() {
     mainWindow = null;
   });
 
-
-  console.log('CARSTEN_URL: ' + config.carstenUrl);
-  console.log('http_proxy: ' + config.carstenProxy);
-
-
-
-  if(config.carstenProxy === undefined)
-  {
-    options = 
+  function getRequestOptions(path, method, param) {
+    param = param || '';
+    if(config.carstenProxy === undefined)
+    {
+      options =
       {
         hostname: url.parse(config.carstenUrl).hostname,
         port: url.parse(config.carstenUrl).port,
-        method: 'GET',
-        timeout: 5000000
+        path: path + '/' + param,
+        method: method
       };
-  }
-  else
-  {
-    options = {
-      hostname: url.parse(config.carstenProxy).hostname,
-      port: url.parse(config.carstenProxy).port,
-      path: config.carstenUrl + '/rest/carst',
-      headers: {
+    }
+    else
+    {
+      options = {
+        hostname: url.parse(config.carstenProxy).hostname,
+        port: url.parse(config.carstenProxy).port,
+        path: config.carstenUrl + path + '/' + param,
+        headers: {
           Host: url.parse(config.carstenUrl).hostname
-        },
-      timeout: 5000000
-    };
+        }
+      };
+    }
+
+    return options;
   }
 
   function handleUserInput(input) {
@@ -101,26 +108,11 @@ app.on('ready', function() {
   function register() {
 
     var data = {
-      channel: config.channel
+      channel: config.channel,
+      hostname: config.receiverName
     };
 
-    var options;
-    if(config.carstenProxy === undefined) {
-      options = {
-        hostname: url.parse(config.carstenUrl).hostname,
-        port: url.parse(config.carstenUrl).port,
-        path: '/rest/init'
-      };
-    } else {
-      options = {
-        hostname: url.parse(config.carstenProxy).hostname,
-        port: url.parse(config.carstenProxy).port,
-        path: config.carstenUrl + '/rest/init',
-        headers: {
-          Host: url.parse(config.carstenUrl).hostname
-        }
-      };
-    }
+    var options = getRequestOptions('/rest/init', 'POST');
 
     http.post(options, data, function(res) {
       requestCarst();
@@ -131,13 +123,13 @@ app.on('ready', function() {
 
   register();
 
-  //poll for new urls
   function requestCarst() {
-    options.path = '/rest/carst';
+    var options = getRequestOptions('/rest/carst', 'GET', config.receiverName);
     var req = http.request(options, function(res) {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
+        console.log(data);
         var url = JSON.parse( data ).url;
         if(currentUrl !== url) {
           handleUserInput(url);
@@ -152,11 +144,8 @@ app.on('ready', function() {
     });
   }
 
-
-
-  //poll for new commands
   function requestCommand() {
-    options.path = '/rest/command';
+    var options = getRequestOptions('/rest/command', 'GET', config.receiverName);
     var req = http.request(options, function(res) {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
@@ -171,5 +160,4 @@ app.on('ready', function() {
       console.error(e);
     });
   }
-
 });
