@@ -16,7 +16,7 @@ config.plugins = [{name:'index'}, {name:'system'}, {name:'url'}];
 if(process.platform === 'win32') {
   config.pluginPath = './plugins';
 } else {
-  config.pluginPath = '../../../../app/plugins';
+  config.pluginPath = '../../../../../app/plugins';
 }
 
 console.log(__dirname);
