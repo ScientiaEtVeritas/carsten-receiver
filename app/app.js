@@ -115,8 +115,16 @@ app.on('ready', function() {
     var options = getRequestOptions('/rest/init', 'POST');
 
     http.post(options, data, function(res) {
-      requestCarst();
-      requestCommand();
+      res.on("data", function(chunk) {
+        chunk = JSON.parse( chunk );
+        if(chunk.status) {
+          console.log("REGISTRATION SUCCESSFULLY");
+          requestCarst();
+          requestCommand();
+        } else {
+          console.log("REGISTRATION ERROR: " + chunk.message);
+        }
+      });
     });
 
   }
