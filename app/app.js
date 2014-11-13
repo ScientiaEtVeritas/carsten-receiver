@@ -114,8 +114,13 @@ app.on('ready', function() {
 
     var options = getRequestOptions('/rest/init', 'POST');
 
+    console.log(options);
+    console.log(data);
+
     http.post(options, data, function(res) {
+      res.setEncoding('utf8');
       res.on("data", function(chunk) {
+        console.log(chunk);
         chunk = JSON.parse( chunk );
         if(chunk.status) {
           console.log("REGISTRATION SUCCESSFULLY");
@@ -137,12 +142,7 @@ app.on('ready', function() {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
-        console.log(data);
-        var url = JSON.parse( data ).url;
-        if(currentUrl !== url) {
-          handleUserInput(url);
-          currentUrl = url;
-        }
+        handleUserInput(JSON.parse( data ).url);
         requestCarst();
       });
     });
