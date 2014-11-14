@@ -115,10 +115,6 @@ app.on('ready', function() {
 
     var options = getRequestOptions('/rest/init', 'POST');
 
-    console.log(options);
-    console.log(data);
-
-
     data = JSON.stringify(data);
 
     options.headers['Content-Type'] = 'application/json';
@@ -142,7 +138,7 @@ app.on('ready', function() {
       });
     });
     req.write(data);
-   // req.end();
+    req.end();
   }
 
   register();
