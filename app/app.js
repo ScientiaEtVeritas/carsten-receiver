@@ -14,7 +14,7 @@ config.channel = process.env.CHANNEL || '#global';
 config.receiverName = process.env.RECEIVER_NAME || os.hostname();
 
 // which plugins, which path
-config.plugins = [{name:'index'}, {name:'system'}, {name:'url'}];
+config.plugins = [{name:'control'}, {name:'index'}, {name:'system'}, {name:'url'}];
 if(process.platform === 'win32') {
   config.pluginPath = './plugins';
 } else {
@@ -148,7 +148,12 @@ app.on('ready', function() {
     });
     req.end();
     req.on('error', function (e) {
-      console.error(e);
+      if(e.code === 'ECONNRESET') {
+        console.log('ECONNRESET --- RECONNECTING');
+        requestCarst();
+      } else {
+        console.error(e);
+      }
     });
   }
 
@@ -165,7 +170,12 @@ app.on('ready', function() {
     });
     req.end();
     req.on('error', function (e) {
-      console.error(e);
+      if(e.code === 'ECONNRESET') {
+        console.log('ECONNRESET --- RECONNECTING');
+        requestCommand();
+      } else {
+        console.error(e);
+      }
     });
   }
 });
