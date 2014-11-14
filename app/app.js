@@ -1,5 +1,4 @@
 var http          = require('http');
-    http.post     = require('http-post');
 var url           = require('url');
 var app           = require('app');
 var path          = require('path');
@@ -66,7 +65,8 @@ app.on('ready', function() {
         hostname: url.parse(config.carstenUrl).hostname,
         port: url.parse(config.carstenUrl).port,
         path: path + '/' + param,
-        method: method
+        method: method,
+        headers: { }
       };
     }
     else
@@ -75,6 +75,7 @@ app.on('ready', function() {
         hostname: url.parse(config.carstenProxy).hostname,
         port: url.parse(config.carstenProxy).port,
         path: config.carstenUrl + path + '/' + param,
+        method: method,
         headers: {
           Host: url.parse(config.carstenUrl).hostname
         }
@@ -117,7 +118,16 @@ app.on('ready', function() {
     console.log(options);
     console.log(data);
 
-    http.post(options, data, function(res) {
+
+    data = JSON.stringify(data);
+
+    options.headers['Content-Type'] = 'application/json';
+    options.headers['Content-Length'] = data.length;
+
+    console.log(options);
+    console.log(data);
+
+    var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on("data", function(chunk) {
         console.log(chunk);
@@ -131,7 +141,8 @@ app.on('ready', function() {
         }
       });
     });
-
+    req.write(data);
+   // req.end();
   }
 
   register();
