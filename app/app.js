@@ -150,6 +150,7 @@ app.on('ready', function() {
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
         handleUserInput(JSON.parse( data ).url);
+        console.log('NEW REQUEST', data);
         requestCarst();
       });
     });
