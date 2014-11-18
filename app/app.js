@@ -126,14 +126,19 @@ app.on('ready', function() {
     var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on("data", function(chunk) {
-        console.log(chunk);
-        chunk = JSON.parse( chunk );
-        if(chunk.status) {
-          console.log("REGISTRATION SUCCESSFULLY");
-          requestCarst();
-          requestCommand();
-        } else {
-          console.log("REGISTRATION ERROR: " + chunk.message);
+        try {
+          chunk = JSON.parse( chunk );
+          if(chunk.status) {
+            console.log("REGISTRATION SUCCESSFULLY");
+            requestCarst();
+            requestCommand();
+          } else {
+            console.log("REGISTRATION ERROR: " + chunk.message);
+          }
+        } catch(e) {
+          console.log('\n*----- FATAL REGISTRATION ERROR -----*\n' +
+          e + '\n\n' +
+          chunk);
         }
       });
     });
@@ -149,8 +154,14 @@ app.on('ready', function() {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
-        handleUserInput(JSON.parse( data ).url);
-        console.log('NEW REQUEST', data);
+        try {
+          var carst = JSON.parse( data ).url;
+          handleUserInput(carst);
+        } catch(e) {
+          console.log('\n*-------- ERROR --------*\n' +
+          e + '\n\n' +
+          data);
+        }
         requestCarst();
       });
     });
@@ -171,8 +182,14 @@ app.on('ready', function() {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
-        var command = JSON.parse( data ).command;
+        try {
+          var command = JSON.parse( data ).command;
           handleUserInput(command);
+        } catch(e) {
+          console.log('\n*-------- ERROR --------*\n' +
+              e + '\n\n' +
+              data);
+        }
         requestCommand();
       });
     });

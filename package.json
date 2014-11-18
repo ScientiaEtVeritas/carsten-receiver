@@ -2,7 +2,7 @@
   "name": "carsten-receiver-builder",
   "version": "0.0.1",
   "scripts": {
-    "start": "release/Atom.app/Contents/MacOS/Atom app/app.js",
+    "start": "node start.js",
     "postinstall": "gulp"
   },
   "devDependencies": {

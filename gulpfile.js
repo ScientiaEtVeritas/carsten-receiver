@@ -9,9 +9,13 @@ gulp.task('downloadatomshell', function(cb){
     }, cb);
 });
 
-gulp.task('copyfiles', function(){
-    return gulp.src(['app/**.*'])
-        .pipe(gulp.dest('release/Atom.app/Contents/Resources/app/'));
-});
+if(process.platform !== 'win32') {
+    gulp.task('copyfiles', function(){
+        return gulp.src(['app/**.*'])
+            .pipe(gulp.dest('release/Atom.app/Contents/Resources/app/'));
+    });
 
-gulp.task('default', ['downloadatomshell','copyfiles']);
+    gulp.task('default', ['downloadatomshell','copyfiles']);
+} else {
+    gulp.task('default', ['downloadatomshell']);
+}
