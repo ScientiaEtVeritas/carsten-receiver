@@ -165,7 +165,6 @@ app.on('ready', function() {
         requestCarst();
       });
     });
-    req.end();
     req.on('error', function (e) {
       if(e.code === 'ECONNRESET') {
         console.log('ECONNRESET --- RECONNECTING');
@@ -174,6 +173,7 @@ app.on('ready', function() {
         console.error(e);
       }
     });
+    req.end();
   }
 
   function requestCommand() {
@@ -193,7 +193,6 @@ app.on('ready', function() {
         requestCommand();
       });
     });
-    req.end();
     req.on('error', function (e) {
       if(e.code === 'ECONNRESET') {
         console.log('ECONNRESET --- RECONNECTING');
@@ -202,5 +201,6 @@ app.on('ready', function() {
         console.error(e);
       }
     });
+    req.end();
   }
 });

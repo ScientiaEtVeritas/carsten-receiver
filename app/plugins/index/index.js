@@ -8,7 +8,7 @@ this.expressions = [
     {
         expression : /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/,
         fn : function(result) {
-            result.window.loadUrl('http://www.youtube.com/embed/' + result.match[7] + '?hd=1?&autoplay=1');
+            result.window.loadUrl('http://www.youtube.com/embed/' + result.match[7] + '?hd=1?&autoplay=1&rel=0&showinfo=0&disablekb=1&controls=0&modestbranding=1');
         }
     }
 ];
