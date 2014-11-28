@@ -85,18 +85,20 @@ app.on('ready', function() {
     return options;
   }
 
-  function handleUserInput(input) {
+  function handleUserInput(carst) {
     var matched = false;
     config.plugins.forEach(function(plugin) {
       plugin.app.expressions.forEach(function(expression) {
         if(!matched) {
           console.log(expression.expression);
-          var match = input.match(expression.expression);
+          console.log(carst.url, carst.command);
+          var match = carst.url && carst.url.match(expression.expression) || carst.command && carst.command.match(expression.expression);
           if(match) {
             expression.fn({
               window: mainWindow,
               path: path,
-              url: input,
+              url: carst.url || carst.command,
+              channel: carst.channel,
               match: match
             });
             matched = true;
@@ -104,6 +106,33 @@ app.on('ready', function() {
         }
       });
     });
+  /*  mainWindow.webContents.on('did-finish-load', function() {
+      function tmp () {
+        /*var div = document.createElement("div");
+        div.style.position = "fixed";
+        div.style.bottom = "50px";
+        div.style.right = "50px";
+        div.style.height = "75px";
+        div.style.width = "200px";
+        div.style.backgroundColor = "#ffffff";
+        div.appendChild(document.createTextNode("<span style='font-size:3em;'>Zeit läuft ab...</span>"));
+        document.body.appendChild(div);*/
+        /*var $div = $("<div style='position:fixed;bottom:25px;right:25px;height:100px;width:250px;background-color:white;'> <div style='text-align:center;'>" +
+       "<div class='head-circle' style='z-index:0;'>"+
+       "<div style='position: absolute; left:30px; z-index:2;' class='heading'>Carsten &#10084;</div>"+
+        "<div style='width: 60px; height:60px; background-color:#FBDFC9; position: absolute; left:100px; top:75px; border-radius:60px; z-index:1;'></div>"+
+          "<div style='width: 60px; height:60px; background-color:#FBDFC9; position: absolute; right:100px; top:75px; border-radius:60px; z-index:1;'></div>"+
+          "<p style='z-index:2; position: absolute; top:150px; font-style: italic;'>" +
+          "With Carsten you can <strong>carst</strong> content to screens within your network.<br>"+
+          "</p></div> </div>Zeit läuft ab...</div>");
+        $('body').append($div);
+      }
+      console.log(tmp.toString());
+      mainWindow.webContents.executeJavaScript('(' + tmp.toString() + ')();'); */
+      //  mainWindow.capturePage(function(image) {
+      //    console.log(image.toString('base64'));
+      //  });
+    /*});*/
   }
 
   function register() {
@@ -155,7 +184,7 @@ app.on('ready', function() {
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
         try {
-          var carst = JSON.parse( data ).url;
+          var carst = JSON.parse( data );
           handleUserInput(carst);
         } catch(e) {
           console.log('\n*-------- ERROR --------*\n' +
@@ -183,7 +212,7 @@ app.on('ready', function() {
       res.on('data', function(chunk) { data += chunk; });
       res.on('end', function(){
         try {
-          var command = JSON.parse( data ).command;
+          var command = JSON.parse( data );
           handleUserInput(command);
         } catch(e) {
           console.log('\n*-------- ERROR --------*\n' +

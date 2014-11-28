@@ -12,6 +12,12 @@ this.expressions = [
         }
     },
     {
+        expression : /^http:\/\/localhost:3000\/image$/,
+        fn : function(result) {
+            result.window.loadUrl(result.url);
+        }
+    },
+    {
         expression : /.*/,
         fn : function(result) {
             result.window.loadUrl(result.path.normalize('file://' + __dirname + '/error.html'));

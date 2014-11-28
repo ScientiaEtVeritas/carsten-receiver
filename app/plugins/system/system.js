@@ -12,6 +12,16 @@ this.expressions = [
         }
     },
     {
+        expression : new RegExp("^toggleMaximize$"),
+        fn : function(result) {
+            if(result.window.isFullScreen()) {
+                result.window.setFullScreen(false);
+            } else {
+                result.window.setFullScreen(true);
+            }
+        }
+    },
+    {
         expression : new RegExp("^reload$"),
         fn : function(result) {
             result.window.reload();
@@ -20,7 +30,7 @@ this.expressions = [
     {
         expression : new RegExp("^devtools$"),
         fn : function(result) {
-            result.window.toogleDevTools();
+            result.window.toggleDevTools();
         }
     }
 ];
