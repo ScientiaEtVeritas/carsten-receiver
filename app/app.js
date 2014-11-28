@@ -11,6 +11,8 @@ config.carstenProxy = process.env.HTTP_PROXY;
 config.channel = process.env.CHANNEL || '#global';
 config.receiverName = process.env.RECEIVER_NAME || os.hostname();
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 var http;
 if(/http:\/\//.test(config.carstenUrl)) {
   http = require('http');
@@ -75,7 +77,9 @@ app.on('ready', function() {
         port: url.parse(config.carstenUrl).port,
         path: path + '/' + param,
         method: method,
-        headers:{"User-Agent":"foobar/1.0"}
+        headers:{"User-Agent":"foobar/1.0"},
+        rejectUnauthorized: false,
+        strictSSL: false
       };
     }
     else
@@ -88,7 +92,9 @@ app.on('ready', function() {
         headers: {
           "User-Agent":"foobar/1.0",
           Host: url.parse(config.carstenUrl).hostname
-        }
+        },
+        rejectUnauthorized: false,
+        strictSSL: false
       };
     }
 
@@ -181,6 +187,9 @@ app.on('ready', function() {
           chunk);
         }
       });
+    });
+    req.on('error', function(err) {
+      console.log(err);
     });
     req.write(data);
     req.end();
