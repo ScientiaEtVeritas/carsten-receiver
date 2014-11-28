@@ -1,4 +1,3 @@
-var http          = require('http');
 var url           = require('url');
 var app           = require('app');
 var path          = require('path');
@@ -11,6 +10,16 @@ config.carstenUrl = process.env.CARSTEN_URL || 'http://localhost:3000';
 config.carstenProxy = process.env.HTTP_PROXY;
 config.channel = process.env.CHANNEL || '#global';
 config.receiverName = process.env.RECEIVER_NAME || os.hostname();
+
+var http;
+if(/http:\/\//.test(config.carstenUrl)) {
+  http = require('http');
+} else if(/https:\/\//.test(config.carstenUrl)) {
+  http = require('https');
+} else {
+  console.log('ERROR: Invalid Carsten-URL.');
+  process.exit(1);
+}
 
 // which plugins, which path
 config.plugins = [{name:'control'}, {name:'index'}, {name:'system'}, {name:'url'}];
@@ -66,7 +75,7 @@ app.on('ready', function() {
         port: url.parse(config.carstenUrl).port,
         path: path + '/' + param,
         method: method,
-        headers: { }
+        headers:{"User-Agent":"foobar/1.0"}
       };
     }
     else
@@ -77,6 +86,7 @@ app.on('ready', function() {
         path: config.carstenUrl + path + '/' + param,
         method: method,
         headers: {
+          "User-Agent":"foobar/1.0",
           Host: url.parse(config.carstenUrl).hostname
         }
       };
@@ -95,6 +105,7 @@ app.on('ready', function() {
           var match = carst.url && carst.url.match(expression.expression) || carst.command && carst.command.match(expression.expression);
           if(match) {
             expression.fn({
+              carstenUrl: config.carstenUrl,
               window: mainWindow,
               path: path,
               url: carst.url || carst.command,
