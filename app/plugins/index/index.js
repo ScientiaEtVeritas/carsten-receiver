@@ -4,7 +4,7 @@ this.expressions = [
         fn : function(result) {
             console.log(result.channel);
             console.log(result.channel.substr(1));
-            result.window.loadUrl(result.path.normalize(result.carstenUrl + '/apps/index/index.html?channel=' + result.channel.substr(1)));
+            result.window.loadUrl(result.carstenUrl + '/apps/index/index.html?channel=' + result.channel.substr(1));
         }
     },
     {
