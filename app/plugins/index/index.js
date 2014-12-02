@@ -2,9 +2,13 @@ this.expressions = [
     {
         expression : new RegExp("^app://index$"),
         fn : function(result) {
-            console.log(result.channel);
-            console.log(result.channel.substr(1));
             result.window.loadUrl(result.carstenUrl + '/apps/index/index.html?channel=' + result.channel.substr(1));
+        }
+    },
+    {
+        expression : new RegExp("^app://lunch$"),
+        fn : function(result) {
+            result.window.loadUrl(result.carstenUrl + '/apps/lunch/index.html');
         }
     },
     {
