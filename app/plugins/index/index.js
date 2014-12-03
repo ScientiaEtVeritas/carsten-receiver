@@ -6,6 +6,12 @@ this.expressions = [
         }
     },
     {
+        expression : new RegExp("^file://(.*)"),
+        fn : function(result) {
+            result.window.loadUrl(result.carstenUrl + '/image/' + result.match[1]);
+        }
+    },
+    {
         expression : new RegExp("^app://lunch$"),
         fn : function(result) {
             result.window.loadUrl(result.carstenUrl + '/apps/lunch/index.html');

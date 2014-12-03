@@ -123,33 +123,24 @@ app.on('ready', function() {
         }
       });
     });
-  /*  mainWindow.webContents.on('did-finish-load', function() {
-      function tmp () {
-        /*var div = document.createElement("div");
-        div.style.position = "fixed";
-        div.style.bottom = "50px";
-        div.style.right = "50px";
-        div.style.height = "75px";
-        div.style.width = "200px";
-        div.style.backgroundColor = "#ffffff";
-        div.appendChild(document.createTextNode("<span style='font-size:3em;'>Zeit läuft ab...</span>"));
-        document.body.appendChild(div);*/
-        /*var $div = $("<div style='position:fixed;bottom:25px;right:25px;height:100px;width:250px;background-color:white;'> <div style='text-align:center;'>" +
-       "<div class='head-circle' style='z-index:0;'>"+
-       "<div style='position: absolute; left:30px; z-index:2;' class='heading'>Carsten &#10084;</div>"+
-        "<div style='width: 60px; height:60px; background-color:#FBDFC9; position: absolute; left:100px; top:75px; border-radius:60px; z-index:1;'></div>"+
-          "<div style='width: 60px; height:60px; background-color:#FBDFC9; position: absolute; right:100px; top:75px; border-radius:60px; z-index:1;'></div>"+
-          "<p style='z-index:2; position: absolute; top:150px; font-style: italic;'>" +
-          "With Carsten you can <strong>carst</strong> content to screens within your network.<br>"+
-          "</p></div> </div>Zeit läuft ab...</div>");
-        $('body').append($div);
-      }
-      console.log(tmp.toString());
-      mainWindow.webContents.executeJavaScript('(' + tmp.toString() + ')();'); */
-      //  mainWindow.capturePage(function(image) {
-      //    console.log(image.toString('base64'));
-      //  });
-    /*});*/
+   /* mainWindow.webContents.on('did-finish-load', function() {
+      mainWindow.capturePage(function(image) {
+
+        image = JSON.stringify({
+          image : image
+        });
+
+        console.log(image);
+        var options = getRequestOptions('/rest/capture', 'POST');
+        options.headers['Content-Type'] = 'application/json';
+        options.headers['Content-Length'] = image.length;
+        var req = http.request(options, function(res) {
+
+        });
+        req.write(image);
+        req.end();
+      });
+    });*/
   }
 
   function register() {
