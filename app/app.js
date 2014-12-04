@@ -60,7 +60,7 @@ app.on('ready', function() {
   var currentUrl;
   var newUrl;
   var options = {};
-  var mainWindow = new BrowserWindow({width: 800, height: 600 /*fullscreen: true, "skip-taskbar": true*/ });
+  var mainWindow = new BrowserWindow({fullscreen: true, "skip-taskbar": true, "node-integration":false });
   //mainWindow.openDevTools(); .maximize(); .capturePage(); .reload();
 
   mainWindow.on('closed', function() {

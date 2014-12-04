@@ -26,7 +26,7 @@ this.expressions = [
     {
         expression : /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/,
         fn : function(result) {
-            result.window.loadUrl('http://f.vimeocdn.com/p/flash/moogaloop/6.0.22/moogaloop.swf?clip_id=' + result.match[5] + '&color=00adef&fullscreen=1&autoplay=1&server=vimeo.com&show_byline=1&show_portrait=0&show_title=1&controller=player2&view=moogaloop_swf&cdn_url=http%3A%2F%2Ff.vimeocdn.com&player_url=player.vimeo.com&moogaloop_type=moogaloop');
+            result.window.loadUrl('https://player.vimeo.com/video/' + result.match[5] + '?autoplay=1&badge=0&byline=0&portrait=0');
         }
     }
 ];
