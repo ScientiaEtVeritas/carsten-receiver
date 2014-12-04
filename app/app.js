@@ -13,6 +13,9 @@ config.receiverName = process.env.RECEIVER_NAME || os.hostname();
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+var io  = require('socket.io-client');         // this is the socket.io client
+var socket    = io.connect('http://localhost:3000/receiver');               // connect to second app
+
 var http;
 if(/http:\/\//.test(config.carstenUrl)) {
   http = require('http');
@@ -63,45 +66,10 @@ app.on('ready', function() {
   var mainWindow = new BrowserWindow({fullscreen: true, "skip-taskbar": true, "node-integration":false, "web-preferences": {
     plugins:true
   } });
-  //mainWindow.openDevTools(); .maximize(); .capturePage(); .reload();
 
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
-
-  function getRequestOptions(path, method, param) {
-    param = param || '';
-    if(config.carstenProxy === undefined)
-    {
-      options =
-      {
-        hostname: url.parse(config.carstenUrl).hostname,
-        port: url.parse(config.carstenUrl).port,
-        path: path + '/' + param,
-        method: method,
-        headers:{"User-Agent":"foobar/1.0"},
-        rejectUnauthorized: false,
-        strictSSL: false
-      };
-    }
-    else
-    {
-      options = {
-        hostname: url.parse(config.carstenProxy).hostname,
-        port: url.parse(config.carstenProxy).port,
-        path: config.carstenUrl + path + '/' + param,
-        method: method,
-        headers: {
-          "User-Agent":"foobar/1.0",
-          Host: url.parse(config.carstenUrl).hostname
-        },
-        rejectUnauthorized: false,
-        strictSSL: false
-      };
-    }
-
-    return options;
-  }
 
   function handleUserInput(carst) {
     var matched = false;
@@ -145,104 +113,35 @@ app.on('ready', function() {
     });*/
   }
 
-  function register() {
-
     var data = {
       channel: config.channel,
       hostname: config.receiverName
     };
 
-    var options = getRequestOptions('/rest/init', 'POST');
+    socket.emit('registerReceiver', data);
 
-    data = JSON.stringify(data);
-
-    options.headers['Content-Type'] = 'application/json';
-    options.headers['Content-Length'] = data.length;
-
-    console.log(options);
-    console.log(data);
-
-    var req = http.request(options, function(res) {
-      res.setEncoding('utf8');
-      res.on("data", function(chunk) {
-        try {
-          chunk = JSON.parse( chunk );
-          if(chunk.status) {
-            console.log("REGISTRATION SUCCESSFULLY");
-            requestCarst();
-            requestCommand();
-          } else {
-            console.log("REGISTRATION ERROR: " + chunk.message);
-          }
-        } catch(e) {
-          console.log('\n*----- FATAL REGISTRATION ERROR -----*\n' +
-          e + '\n\n' +
-          chunk);
-        }
-      });
+    socket.on('registrationSuccessfully', function() {
+          console.log("REGISTRATION SUCCESSFULLY");
     });
-    req.on('error', function(err) {
-      console.log(err);
-    });
-    req.write(data);
-    req.end();
-  }
 
-  register();
-
-  function requestCarst() {
-    var options = getRequestOptions('/rest/carst', 'GET', config.receiverName);
-    var req = http.request(options, function(res) {
-      var data = '';
-      res.on('data', function(chunk) { data += chunk; });
-      res.on('end', function(){
-        try {
-          var carst = JSON.parse( data );
-          handleUserInput(carst);
-        } catch(e) {
-          console.log('\n*-------- ERROR --------*\n' +
-          e + '\n\n' +
-          data);
-        }
-        requestCarst();
-      });
+    socket.on('registrationFailed', function(message) {
+      console.error("REGISTRATION ERROR: " + message);
+      socket.disconnect();
+      process.exit(1);
     });
-    req.on('error', function (e) {
-      if(e.code === 'ECONNRESET') {
-        console.log('ECONNRESET --- RECONNECTING');
-        requestCarst();
-      } else {
-        console.error(e);
+
+    socket.on('carst', function (carst) {
+      if(carst.channel == config.channel) {
+        handleUserInput(carst);
       }
     });
-    req.end();
-  }
 
-  function requestCommand() {
-    var options = getRequestOptions('/rest/command', 'GET', config.receiverName);
-    var req = http.request(options, function(res) {
-      var data = '';
-      res.on('data', function(chunk) { data += chunk; });
-      res.on('end', function(){
-        try {
-          var command = JSON.parse( data );
-          handleUserInput(command);
-        } catch(e) {
-          console.log('\n*-------- ERROR --------*\n' +
-              e + '\n\n' +
-              data);
-        }
-        requestCommand();
-      });
-    });
-    req.on('error', function (e) {
-      if(e.code === 'ECONNRESET') {
-        console.log('ECONNRESET --- RECONNECTING');
-        requestCommand();
-      } else {
-        console.error(e);
+    socket.on('command', function (command) {
+      if(command.channel == config.channel) {
+        handleUserInput(command);
       }
     });
-    req.end();
-  }
+
+
+
 });
