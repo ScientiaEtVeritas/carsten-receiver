@@ -14,7 +14,7 @@ config.receiverName = process.env.RECEIVER_NAME || os.hostname();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var io  = require('socket.io-client');         // this is the socket.io client
-var socket    = io.connect('http://localhost:3000/receiver');               // connect to second app
+var socket    = io.connect(config.carstenUrl + '/receiver');               // connect to second app
 
 var http;
 if(/http:\/\//.test(config.carstenUrl)) {
@@ -93,24 +93,13 @@ app.on('ready', function() {
         }
       });
     });
-   /* mainWindow.webContents.on('did-finish-load', function() {
-      mainWindow.capturePage(function(image) {
-
-        image = JSON.stringify({
-          image : image
+    mainWindow.webContents.on('did-finish-load', function() {
+      setTimeout(function() {
+        mainWindow.capturePage(function(image) {
+          socket.emit('capture', image);
         });
-
-        console.log(image);
-        var options = getRequestOptions('/rest/capture', 'POST');
-        options.headers['Content-Type'] = 'application/json';
-        options.headers['Content-Length'] = image.length;
-        var req = http.request(options, function(res) {
-
-        });
-        req.write(image);
-        req.end();
+      }, 3000);
       });
-    });*/
   }
 
     var data = {
@@ -137,6 +126,7 @@ app.on('ready', function() {
     });
 
     socket.on('command', function (command) {
+      console.log(command.channel, command);
       if(command.channel == config.channel) {
         handleUserInput(command);
       }

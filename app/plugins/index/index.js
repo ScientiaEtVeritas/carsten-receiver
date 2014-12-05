@@ -12,9 +12,9 @@ this.expressions = [
         }
     },
     {
-        expression : new RegExp("^app://lunch$"),
+        expression : new RegExp("^app://gag$"),
         fn : function(result) {
-            result.window.loadUrl(result.carstenUrl + '/apps/lunch/index.html');
+            result.window.loadUrl(result.carstenUrl + '/apps/gag/index.html');
         }
     },
     {
