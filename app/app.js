@@ -27,7 +27,7 @@ if(/http:\/\//.test(config.carstenUrl)) {
 }
 
 // which plugins, which path
-config.plugins = [{name:'control'}, {name:'index'}, {name:'system'}, {name:'url'}];
+config.plugins = [{name:'apps'}, {name:'system'}];
 if(process.platform === 'win32') {
   config.pluginPath = './plugins';
 } else {
@@ -38,7 +38,7 @@ var consolePlugins = '';
 
 // load plugins
 config.plugins.forEach(function(plugin) {
-    plugin.app = require(config.pluginPath + '/' + plugin.name + '/' + plugin.name);
+    plugin.app = require(config.pluginPath + '/' + plugin.name);
     consolePlugins += '\nPlugin loaded: ' +  plugin.name;
 });
 
